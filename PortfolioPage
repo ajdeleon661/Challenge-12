@@ -1,0 +1,306 @@
+// The exported code uses Tailwind CSS. Install Tailwind CSS in your dev environment to ensure all styles work.
+import React, { useState, useEffect } from 'react';
+const App: React.FC = () => {
+const [activeSection, setActiveSection] = useState('about');
+const [formData, setFormData] = useState({ name: '', email: '', message: '' });
+const [formErrors, setFormErrors] = useState({ name: '', email: '', message: '' });
+const [showNotification, setShowNotification] = useState(false);
+const [notificationMessage, setNotificationMessage] = useState('');
+const validateEmail = (email: string) => {
+return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+};
+const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+const { name, value } = e.target;
+setFormData(prev => ({ ...prev, [name]: value }));
+};
+const handleBlur = (field: string) => {
+if (!formData[field as keyof typeof formData]) {
+setFormErrors(prev => ({ ...prev, [field]: 'This field is required' }));
+} else if (field === 'email' && !validateEmail(formData.email)) {
+setFormErrors(prev => ({ ...prev, email: 'Please enter a valid email address' }));
+} else {
+setFormErrors(prev => ({ ...prev, [field]: '' }));
+}
+};
+const handleSubmit = (e: React.FormEvent) => {
+e.preventDefault();
+if (!formData.name || !formData.email || !formData.message) {
+setNotificationMessage('Please fill in all required fields');
+setShowNotification(true);
+return;
+}
+if (!validateEmail(formData.email)) {
+setNotificationMessage('Please enter a valid email address');
+setShowNotification(true);
+return;
+}
+setNotificationMessage('Message sent successfully!');
+setShowNotification(true);
+setFormData({ name: '', email: '', message: '' });
+};
+useEffect(() => {
+if (showNotification) {
+const timer = setTimeout(() => {
+setShowNotification(false);
+}, 3000);
+return () => clearTimeout(timer);
+}
+}, [showNotification]);
+const projects = [
+{
+title: 'Task Management App',
+image: 'https://public.readdy.ai/ai/img_res/9cd7983036a3cc8f57be338406968815.jpg',
+demo: 'https://demo.example.com/taskapp',
+github: 'https://github.com/example/taskapp'
+},
+{
+title: 'Social Media Dashboard',
+image: 'https://public.readdy.ai/ai/img_res/84e841e771da665dd451ddca9e7575eb.jpg',
+demo: 'https://demo.example.com/dashboard',
+github: 'https://github.com/example/dashboard'
+},
+{
+title: 'Weather Application',
+image: 'https://public.readdy.ai/ai/img_res/4b5885fa0d109baa31b5f5815e66b188.jpg',
+demo: 'https://demo.example.com/weather',
+github: 'https://github.com/example/weather'
+},
+
+];
+return (
+<div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50 relative">
+<div className="absolute top-0 left-0 w-32 h-full bg-gradient-to-b from-purple-200 to-pink-200 opacity-30 rounded-r-full"></div>
+<div className="absolute top-0 right-0 w-32 h-full bg-gradient-to-b from-orange-200 to-pink-200 opacity-30 rounded-l-full"></div>
+{/* Header */}
+<header className="fixed top-0 left-0 right-0 bg-white bg-opacity-90 backdrop-blur-sm shadow-md z-50">
+<div className="max-w-7xl mx-auto px-4 h-20 flex items-center justify-between">
+<h1 className="text-2xl font-bold text-purple-800">Alexandria De Leon</h1>
+<nav>
+<ul className="flex space-x-8">
+{['about', 'portfolio', 'contact', 'resume'].map((section) => (
+<li key={section}>
+<button
+onClick={() => setActiveSection(section)}
+className={`text-lg font-medium capitalize cursor-pointer whitespace-nowrap ${
+activeSection === section
+? 'text-purple-600 border-b-2 border-purple-600'
+: 'text-gray-600 hover:text-purple-600'
+}`}
+>
+{section === 'about' ? 'About Me' : section}
+</button>
+</li>
+))}
+</ul>
+</nav>
+</div>
+</header>
+{/* Main Content */}
+<main className="pt-32 pb-20 max-w-7xl mx-auto px-4">
+{/* About Section */}
+{activeSection === 'about' && (
+<section className="max-w-4xl mx-auto">
+<div className="flex items-start gap-12">
+<div className="w-64 h-64 rounded-full bg-purple-200 shadow-lg flex items-center justify-center">
+<i className="fas fa-user-circle text-purple-600 text-8xl"></i>
+</div>
+<div>
+<h2 className="text-3xl font-bold text-purple-800 mb-6">About Me</h2>
+<p className="text-lg text-gray-600 leading-relaxed mb-4">
+Hello! I'm Alexandria De Leon, a Biology B.S. major who discovered a passion for coding. I'm fascinated by the intersection of biology and technology, and I'm actively seeking ways to combine these fields to advance our understanding of the sciences.
+</p>
+<p className="text-lg text-gray-600 leading-relaxed mb-4">
+While I'm most comfortable with front-end development using technologies like React and JavaScript, I'm currently expanding my skills to include back-end development. My unique background in biology gives me a different perspective when approaching technical problems.
+</p>
+<p className="text-lg text-gray-600 leading-relaxed">
+I'm particularly interested in exploring how artificial intelligence can be applied across various industries, especially in scientific research and healthcare. My goal is to bridge the gap between biological sciences and technology to create innovative solutions for complex problems.
+</p>
+</div>
+</div>
+</section>
+)}
+{/* Portfolio Section */}
+{activeSection === 'portfolio' && (
+<section>
+<h2 className="text-3xl font-bold text-purple-800 mb-12 text-center">My Projects</h2>
+<div className="grid grid-cols-2 gap-8">
+{projects.map((project, index) => (
+<div key={index} className="bg-white rounded-lg shadow-lg overflow-hidden border-2 border-pink-100 hover:border-pink-300 transition-colors">
+<img src={project.image} alt={project.title} className="w-full h-64 object-cover" />
+<div className="p-6">
+<h3 className="text-xl font-bold text-purple-700 mb-4">{project.title}</h3>
+<div className="flex space-x-4">
+<a
+href={project.github}
+target="_blank"
+rel="noopener noreferrer"
+className="!rounded-button border-2 border-orange-500 text-orange-500 px-6 py-2 cursor-pointer hover:bg-orange-500 hover:text-white transition-colors"
+>
+GitHub
+</a>
+</div>
+</div>
+</div>
+))}
+</div>
+</section>
+)}
+{/* Contact Section */}
+{activeSection === 'contact' && (
+<section className="max-w-2xl mx-auto">
+<h2 className="text-3xl font-bold text-purple-800 mb-12 text-center">Get in Touch</h2>
+<form onSubmit={handleSubmit} className="space-y-6">
+<div>
+<label htmlFor="name" className="block text-sm font-medium text-purple-700 mb-1">
+Name
+</label>
+<input
+type="text"
+id="name"
+name="name"
+value={formData.name}
+onChange={handleFormChange}
+onBlur={() => handleBlur('name')}
+className="w-full px-4 py-2 border border-pink-300 rounded-md focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+/>
+{formErrors.name && <p className="mt-1 text-sm text-red-600">{formErrors.name}</p>}
+</div>
+<div>
+<label htmlFor="email" className="block text-sm font-medium text-purple-700 mb-1">
+Email
+</label>
+<input
+type="email"
+id="email"
+name="email"
+value={formData.email}
+onChange={handleFormChange}
+onBlur={() => handleBlur('email')}
+className="w-full px-4 py-2 border border-pink-300 rounded-md focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+/>
+{formErrors.email && <p className="mt-1 text-sm text-red-600">{formErrors.email}</p>}
+</div>
+<div>
+<label htmlFor="message" className="block text-sm font-medium text-purple-700 mb-1">
+Message
+</label>
+<textarea
+id="message"
+name="message"
+value={formData.message}
+onChange={handleFormChange}
+onBlur={() => handleBlur('message')}
+rows={6}
+className="w-full px-4 py-2 border border-pink-300 rounded-md focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+/>
+{formErrors.message && <p className="mt-1 text-sm text-red-600">{formErrors.message}</p>}
+</div>
+<button
+type="submit"
+className="!rounded-button w-full bg-gradient-to-r from-purple-600 to-pink-500 text-white py-3 cursor-pointer hover:from-purple-700 hover:to-pink-600 transition-colors"
+>
+Send Message
+</button>
+</form>
+</section>
+)}
+{/* Resume Section */}
+{activeSection === 'resume' && (
+<section className="max-w-4xl mx-auto">
+<div className="text-center mb-12">
+<h2 className="text-3xl font-bold text-purple-800 mb-6">Resume</h2>
+<a
+href="/resume.pdf"
+download
+className="!rounded-button inline-flex items-center bg-gradient-to-r from-purple-600 to-pink-500 text-white px-8 py-3 cursor-pointer hover:from-purple-700 hover:to-pink-600 transition-colors"
+>
+<i className="fas fa-download mr-2"></i>
+Download Resume
+</a>
+</div>
+<div className="grid grid-cols-2 gap-12">
+<div>
+<h3 className="text-xl font-bold text-purple-700 mb-6">Technical Skills</h3>
+<ul className="space-y-4">
+<li className="flex items-center">
+<i className="fas fa-code text-purple-600 mr-3"></i>
+<span>JavaScript, TypeScript, Python</span>
+</li>
+<li className="flex items-center">
+<i className="fas fa-laptop-code text-pink-500 mr-3"></i>
+<span>React</span>
+</li>
+<li className="flex items-center">
+<i className="fas fa-database text-orange-500 mr-3"></i>
+<span>MongoDB, PostgreSQL</span>
+</li>
+<li className="flex items-center">
+<i className="fas fa-server text-purple-600 mr-3"></i>
+<span>Node.js</span>
+</li>
+</ul>
+</div>
+<div>
+<h3 className="text-xl font-bold text-purple-700 mb-6">Soft Skills</h3>
+<ul className="space-y-4">
+<li className="flex items-center">
+<i className="fas fa-users text-pink-500 mr-3"></i>
+<span>Team Leadership</span>
+</li>
+<li className="flex items-center">
+<i className="fas fa-comments text-orange-500 mr-3"></i>
+<span>Communication</span>
+</li>
+<li className="flex items-center">
+<i className="fas fa-tasks text-purple-600 mr-3"></i>
+<span>Project Management</span>
+</li>
+<li className="flex items-center">
+<i className="fas fa-lightbulb text-pink-500 mr-3"></i>
+<span>Problem Solving</span>
+</li>
+</ul>
+</div>
+</div>
+</section>
+)}
+</main>
+{/* Footer */}
+<footer className="fixed bottom-0 left-0 right-0 bg-white bg-opacity-90 backdrop-blur-sm shadow-md-reverse">
+<div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-center space-x-8">
+<a
+href="https://github.com/alexandriadeleon"
+target="_blank"
+rel="noopener noreferrer"
+className="text-gray-600 hover:text-purple-600 transition-colors"
+>
+<i className="fab fa-github text-2xl"></i>
+</a>
+<a
+href="https://linkedin.com/in/alexandriadeleon"
+target="_blank"
+rel="noopener noreferrer"
+className="text-gray-600 hover:text-pink-500 transition-colors"
+>
+<i className="fab fa-linkedin text-2xl"></i>
+</a>
+<a
+href="https://stackoverflow.com/users/alexandriadeleon"
+target="_blank"
+rel="noopener noreferrer"
+className="text-gray-600 hover:text-orange-500 transition-colors"
+>
+<i className="fab fa-stack-overflow text-2xl"></i>
+</a>
+</div>
+</footer>
+{/* Notification */}
+{showNotification && (
+<div className="fixed bottom-20 right-4 bg-gradient-to-r from-purple-600 to-pink-500 text-white px-6 py-3 rounded-lg shadow-lg">
+{notificationMessage}
+</div>
+)}
+</div>
+);
+};
+export default App
