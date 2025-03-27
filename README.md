@@ -21,3 +21,5 @@ Frameworks/Libraries: React, Tailwind CSS, Node.js
 APIs & Databases: Habitica API, Pixela API, Firebase, MongoDB
 
 Tools: Git, Figma, VS Code
+
+![image](https://github.com/user-attachments/assets/45c0a132-e337-4b21-83bf-95f183f58e3f)
